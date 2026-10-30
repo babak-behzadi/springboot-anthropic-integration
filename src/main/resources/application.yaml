@@ -1,0 +1,12 @@
+server:
+  port: 6060
+spring:
+  application:
+    name: sprinboot-anthropic-integration
+  ai:
+    anthropic:
+      api-key: ${env.CLAUDE_APIKEY}
+      base-url: http://localhost:6060
+      chat:
+        model: claude-sonnet-5-5
+        max-tokens: 2048
