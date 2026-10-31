@@ -29,8 +29,8 @@ public class ChatService {
 
     public String sendMessage(ChatMessageModel messageModel) {
         return sendMessage(messageModel, () -> switch (messageModel.type()) {
-            case TALK -> "As a friend talk to me.";
-            case SUMMARIZE -> "As a professional editor summerize the text in maximum 100 words.";
-        });
+            case TALK -> "As a friend talk to me (in maximum %d words)";
+            case SUMMARIZE -> "As a professional editor summerize the text in maximum %d words.";
+        }).formatted(messageModel.maxResponseTokens() > 0 ? messageModel.maxResponseTokens() : 20);
     }
 }

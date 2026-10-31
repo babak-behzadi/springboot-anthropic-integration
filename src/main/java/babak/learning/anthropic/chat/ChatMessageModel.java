@@ -1,4 +1,4 @@
 package babak.learning.anthropic.chat;
 
-public record ChatMessageModel(String message, ChatMessageType type) {
+public record ChatMessageModel(String message, ChatMessageType type, int maxResponseTokens) {
 }
