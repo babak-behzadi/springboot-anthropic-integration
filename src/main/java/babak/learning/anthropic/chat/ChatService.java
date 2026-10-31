@@ -19,15 +19,15 @@ public class ChatService {
     private String sendMessage(ChatMessageModel messageModel, Supplier<String> system) {
         return chatClient
                 .prompt()
-                .options(
-                        AnthropicChatOptions
-                                .builder()
-                                .thinking(ThinkingConfigParam.ofAdaptive(
-                                        ThinkingConfigAdaptive.builder().type(JsonValue.from("{\"type\":\"between_tools\"}")).build()
-                                )
-                ))
+//                .options(
+//                        AnthropicChatOptions
+//                                .builder()
+//                                .thinking(ThinkingConfigParam.ofAdaptive(
+//                                        ThinkingConfigAdaptive.builder().type(JsonValue.from("{\"type\":\"between_tools\"}")).build()
+//                                )
+//                ))
                 .user(messageModel.message())
-                .system(system.get())
+//                .system(system.get())
                 .call()
                 .content();
     }
