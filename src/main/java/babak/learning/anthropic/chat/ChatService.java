@@ -1,5 +1,8 @@
 package babak.learning.anthropic.chat;
 
+import com.anthropic.core.JsonValue;
+import com.anthropic.models.messages.ThinkingConfigAdaptive;
+import com.anthropic.models.messages.ThinkingConfigParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.anthropic.AnthropicChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
@@ -19,8 +22,10 @@ public class ChatService {
                 .options(
                         AnthropicChatOptions
                                 .builder()
-                                .thinkingDisabled()
-                )
+                                .thinking(ThinkingConfigParam.ofAdaptive(
+                                        ThinkingConfigAdaptive.builder().type(JsonValue.from("{\"type\":\"between_tools\"}")).build()
+                                )
+                ))
                 .user(messageModel.message())
                 .system(system.get())
                 .call()
