@@ -1,13 +1,12 @@
 package babak.learning.anthropic.chat;
 
-import com.anthropic.core.JsonValue;
-import com.anthropic.models.messages.ThinkingConfigAdaptive;
-import com.anthropic.models.messages.ThinkingConfigParam;
 import lombok.RequiredArgsConstructor;
-import org.springframework.ai.anthropic.AnthropicChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.model.Generation;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 @Service
@@ -17,19 +16,15 @@ public class ChatService {
     private final ChatClient chatClient;
 
     private String sendMessage(ChatMessageModel messageModel, Supplier<String> system) {
-        return chatClient
+        List<Generation> results = Objects.requireNonNull(chatClient
                 .prompt()
-//                .options(
-//                        AnthropicChatOptions
-//                                .builder()
-//                                .thinking(ThinkingConfigParam.ofAdaptive(
-//                                        ThinkingConfigAdaptive.builder().type(JsonValue.from("{\"type\":\"between_tools\"}")).build()
-//                                )
-//                ))
+                .system(system.get())
                 .user(messageModel.message())
-//                .system(system.get())
                 .call()
-                .content();
+                .chatResponse()).getResults();
+        //results(0) : thinking block (using sonnet makes thinking block which cannot be disabled)
+        //results(1) : response
+        return results.get(1).getOutput().getText();
     }
 
     public String sendMessage(ChatMessageModel messageModel) {
