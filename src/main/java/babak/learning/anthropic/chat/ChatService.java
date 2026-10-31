@@ -1,6 +1,7 @@
 package babak.learning.anthropic.chat;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.ai.anthropic.AnthropicChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,11 @@ public class ChatService {
     private String sendMessage(ChatMessageModel messageModel, Supplier<String> system) {
         return chatClient
                 .prompt()
+                .options(
+                        AnthropicChatOptions
+                                .builder()
+                                .thinkingDisabled()
+                )
                 .user(messageModel.message())
                 .system(system.get())
                 .call()
