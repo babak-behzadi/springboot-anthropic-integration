@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,19 +19,25 @@ public class ChatService {
     private String sendMessage(ChatMessageModel messageModel, Supplier<String> system) {
         List<Generation> results = Objects.requireNonNull(chatClient
                 .prompt()
-                .system(system.get())
+                .system(system.get().formatted(messageModel.maxResponseTokens() > 0 ? messageModel.maxResponseTokens() : 20))
                 .user(messageModel.message())
                 .call()
                 .chatResponse()).getResults();
         //results(0) : thinking block (using sonnet makes thinking block which cannot be disabled)
         //results(1) : response
-        return results.get(1).getOutput().getText();
+        return results
+                .stream()
+                .map(generation -> generation.getOutput().getText())
+                .filter(text -> text != null && !text.isBlank())
+                .collect(Collectors.joining("\r\n"));
     }
 
     public String sendMessage(ChatMessageModel messageModel) {
-        return sendMessage(messageModel, () -> switch (messageModel.type()) {
-            case TALK -> "As a friend talk to me (in maximum %d words)";
-            case SUMMARIZE -> "As a professional editor summerize the text in maximum %d words.";
-        }).formatted(messageModel.maxResponseTokens() > 0 ? messageModel.maxResponseTokens() : 20);
+        return sendMessage(messageModel,
+                () -> switch (messageModel.type()) {
+                    case TALK -> "As a friend talk to me (in maximum %d words)";
+                    case SUMMARIZE -> "As a professional editor summarize the text (in maximum %d words)";
+                }
+        );
     }
 }
